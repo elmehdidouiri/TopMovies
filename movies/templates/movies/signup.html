@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}
+Inscription - Top Movies
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <h1>Inscription</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            {{ form.username.label_tag }}
+            {{ form.username }}
+        </div>
+        <div class="form-group">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+        </div>
+        <div class="form-group">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+        </div>
+        <button type="submit" class="button">S'inscrire</button>
+    </form>
+</div>
+<style>
+    /* Container styling */
+    .signup-container {
+        max-width: 400px;
+        margin: 50px auto;
+        padding: 30px;
+        background: #2c3e50;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+    .signup-container h1 {
+        font-size: 2.5em;
+        margin-bottom: 20px;
+        color: #1abc9c;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Form styling */
+    .signup-container form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .form-group {
+        text-align: left;
+    }
+    .form-group label {
+        display: block;
+        font-size: 1em;
+        margin-bottom: 5px;
+        color: #ecf0f1;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1em;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-group input:focus {
+        border-color: #1abc9c;
+        box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
+        outline: none;
+    }
+
+    /* Button styling */
+    .signup-container .button {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(to right, #1abc9c, #16a085);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+    .signup-container .button:hover {
+        background: linear-gradient(to right, #16a085, #149174);
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}

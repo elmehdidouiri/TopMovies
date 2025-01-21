@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}
+Déconnexion - Top Movies
+{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <h1>Déconnexion</h1>
+    <p>Vous êtes déconnecté.</p>
+    <a href="{% url 'login' %}" class="button">Se connecter à nouveau</a>
+</div>
+<style>
+    .logout-container {
+        text-align: center;
+        margin-top: 50px;
+    }
+    .logout-container h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    .logout-container p {
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+    .logout-container .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background: linear-gradient(to right, #1abc9c, #16a085);
+        color: #fff;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1em;
+        transition: background 0.3s ease;
+    }
+    .logout-container .button:hover {
+        background: linear-gradient(to right, #16a085, #149174);
+    }
+</style>
+{% endblock %}

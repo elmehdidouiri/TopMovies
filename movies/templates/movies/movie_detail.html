@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails du Film</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            animation: fadeIn 2s ease-in-out;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #34495e;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .movie-photo {
+            display: block;
+            max-width: 200px; /* Adjusted size */
+            height: auto;
+            border-radius: 10px;
+            margin: 0 auto 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #1abc9c;
+            margin-top: 20px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        p {
+            background: linear-gradient(to right, #34495e, #2c3e50);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(to right, #34495e, #2c3e50);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        .rating i {
+            color: #f1c40f;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px auto;
+        }
+        a.button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #1abc9c, #16a085);
+            color: #fff;
+            border-radius: 5px;
+            text-decoration: none;
+            text-align: center;
+        }
+        a.button:hover {
+            background: linear-gradient(to right, #16a085, #149174);
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% load static %}
+    <div class="container">
+        <img src="{% static 'images/image1.jpg' %}" alt="{{ movie.title }}" class="movie-photo">
+        <h1>{{ movie.title }}</h1>
+        <p><strong>Description : <br></strong> {{ movie.description }}</p>
+        <p><strong>Réalisateur :</strong> {{ movie.director }}</p>
+        <p><strong>Durée :</strong> {{ movie.get_duration_display }}</p>
+        <p><strong>Date de sortie :</strong> {{ movie.release_date }}</p>
+        <div class="rating">
+            <strong>Note :</strong>
+            {% for i in "12345" %}
+                {% if forloop.counter <= movie.rating %}
+                    <i class="fas fa-star"></i>
+                {% else %}
+                    <i class="far fa-star"></i>
+                {% endif %}
+            {% endfor %}
+            <span>{{ movie.rating }}</span>
+        </div>
+        <div class="button-container">
+            <a href="{% url 'movie-list-page' %}" class="button">Retour à la liste</a>
+            <a href="{% url 'movie_update' movie.pk %}" class="button">Modifier</a>
+            <a href="{% url 'movie_delete' movie.pk %}" class="button">Supprimer</a>
+        </div>
+    </div>
+</body>
+</html>
+{% endblock %}

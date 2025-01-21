@@ -1,0 +1,220 @@
+{% extends "base.html" %}
+
+{% block title %}
+Liste des Films - Top Movies
+{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(to right, #2c3e50, #4ca1af);
+        margin: 0;
+        padding: 0;
+        color: #fff;
+    }
+    h1 {
+        text-align: center;
+        color: #fff;
+        margin-top: 20px;
+        font-size: 2.5em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    form.search-form {
+        max-width: 800px;
+        margin: 20px auto;
+        display: flex;
+        gap: 10px;
+        position: relative;
+    }
+    input[type="text"], select {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-size: 1em;
+    }
+    .suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        color: #333;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .suggestions li {
+        padding: 10px;
+        cursor: pointer;
+    }
+    .suggestions li:hover {
+        background: #f1f1f1;
+    }
+    button {
+        padding: 10px 20px;
+        background: linear-gradient(to right, #1abc9c, #16a085);
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+    }
+    button:hover {
+        background: linear-gradient(to right, #16a085, #149174);
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+    .card {
+        background: linear-gradient(to right, #34495e, #2c3e50);
+        margin: 10px 0;
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: flex;
+        gap: 15px;
+    }
+    .card-content {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .rating {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    .rating i {
+        color: #f1c40f;
+    }
+    a {
+        color: #1abc9c;
+        text-decoration: none;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .add-movie {
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        padding: 10px;
+        text-align: center;
+        background: linear-gradient(to right, #1abc9c, #16a085);
+        color: #fff;
+        border-radius: 5px;
+        text-decoration: none;
+    }
+    .add-movie:hover {
+        background: linear-gradient(to right, #16a085, #149174);
+    }
+    .movie-actions {
+        display: flex;
+        gap: 10px;
+    }
+    .movie-actions a {
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 3px;
+    }
+    .edit {
+        background: linear-gradient(to right, #27ae60, #2ecc71);
+    }
+    .delete {
+        background: linear-gradient(to right, #e74c3c, #c0392b);
+    }
+    .edit:hover {
+        background: linear-gradient(to right, #2ecc71, #27ae60);
+    }
+    .delete:hover {
+        background: linear-gradient(to right, #c0392b, #e74c3c);
+    }
+    .movie-photo {
+        width: 150px;
+        height: auto;
+        border-radius: 5px;
+    }
+    .actors {
+        font-size: 0.9em;
+        color: #ccc;
+    }
+</style>
+
+<h1>Liste des Films</h1>
+<form method="GET" class="search-form">
+    <input type="text" name="q" id="search-input" placeholder="Rechercher un film..." value="{{ request.GET.q }}">
+    <ul class="suggestions" id="suggestions-list"></ul>
+    <select name="rating" id="rating-select">
+        <option value="">Filtrer par note</option>
+        <option value="5" {% if request.GET.rating == "5" %}selected{% endif %}>5 étoiles</option>
+        <option value="4" {% if request.GET.rating == "4" %}selected{% endif %}>4 étoiles et plus</option>
+        <option value="3" {% if request.GET.rating == "3" %}selected{% endif %}>3 étoiles et plus</option>
+        <option value="2" {% if request.GET.rating == "2" %}selected{% endif %}>2 étoiles et plus</option>
+        <option value="1" {% if request.GET.rating == "1" %}selected{% endif %}>1 étoile et plus</option>
+    </select>
+    <button type="submit">Rechercher</button>
+</form>
+<ul id="movie-list"></ul>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingSelect = document.getElementById('rating-select');
+        const searchInput = document.getElementById('search-input');
+        const movieList = document.getElementById('movie-list');
+
+        function fetchMovies() {
+            fetch('/api/movies/')
+                .then(response => response.json())
+                .then(data => {
+                    const movies = data.movies;
+                    filterMovies(movies);
+                });
+        }
+
+        function filterMovies(movies) {
+            const selectedRating = parseInt(ratingSelect.value) || 0;
+            const searchText = searchInput.value.toLowerCase();
+
+            movieList.innerHTML = '';
+
+            // Trier les films par note décroissante
+            movies.sort((a, b) => b.rating - a.rating);
+
+            movies.forEach(function(movie) {
+                const movieRating = parseFloat(movie.rating);
+                const movieTitle = movie.title.toLowerCase();
+
+                if (movieRating >= selectedRating && movieTitle.includes(searchText)) {
+                    const movieItem = document.createElement('li');
+                    movieItem.classList.add('card');
+                    movieItem.setAttribute('data-rating', movieRating);
+                    movieItem.innerHTML = `
+                    {% load static %}
+                    <img src="{% static 'images/logo1.jpg' %}" alt="{{ movie.title }}" class="movie-photo">                        <div class="card-content">
+                            <h2><a href="${movieDetailUrl.replace('0', movie.id)}">${movie.title}</a></h2>
+                            <div class="rating">
+                                ${'★'.repeat(Math.floor(movieRating))}${'☆'.repeat(5 - Math.floor(movieRating))}
+                                <span>${movie.rating}</span>
+                            </div>
+                            <div class="actors">Acteurs: ${movie.actors.join(', ')}</div>
+                        </div>
+                    `;
+                    movieList.appendChild(movieItem);
+                }
+            });
+        }
+
+        const movieDetailUrl = "{% url 'movie-detail-page' 0 %}";
+
+        ratingSelect.addEventListener('change', fetchMovies);
+        searchInput.addEventListener('input', fetchMovies);
+
+        fetchMovies();
+    });
+</script>
+{% endblock %}
